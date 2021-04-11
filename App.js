@@ -30,12 +30,31 @@ export default function App() {
       });
   }, []);
 
+  // The app is running!!
+  useEffect(() => {
+    // This subscription allow to unsubscribe too
+    const subscription = Notifications.addNotificationReceivedListener(
+      notification => {
+        console.log(notification);
+      }
+    );
+
+    // Avoiding memory leaks
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   const triggerNotificationHandler = () => {
     // Local Notification
     Notifications.scheduleNotificationAsync({
       content: {
         title: 'My first local notification',
         body: 'This is the first local notification we are sending!',
+        // My own metadata in the notification
+        data: {
+          mySpecialData: 'Some Text',
+        },
       },
       trigger: {
         seconds: 10,
