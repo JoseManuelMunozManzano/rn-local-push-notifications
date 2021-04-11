@@ -25,8 +25,21 @@ export default function App() {
       })
       .then(statusObj => {
         if (statusObj.status !== 'granted') {
-          return;
+          throw new Error('Permission not granted!');
         }
+      })
+      // Sign the app installation up with official push notification servers (Expo servers) in order to receive push notifications.
+      // We will get an ID (token) that we will use to push notifications to this app installation on this device.
+      // In order to work, you have to be signed-up in Expo
+      .then(() => {
+        return Notifications.getExpoPushTokenAsync();
+      })
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
       });
   }, []);
 
@@ -69,6 +82,8 @@ export default function App() {
         seconds: 10,
       },
     });
+
+    // Send a notification totally outside the app
   };
 
   return (
