@@ -30,10 +30,18 @@ export default function App() {
       });
   }, []);
 
-  // The app is running!!
   useEffect(() => {
+    // The app is close. The user taps on a notification
     // This subscription allow to unsubscribe too
-    const subscription = Notifications.addNotificationReceivedListener(
+    const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
+      response => {
+        console.log(response);
+      }
+    );
+
+    // The app is open and running!!
+    // This subscription allow to unsubscribe too
+    const foregroundSubscription = Notifications.addNotificationReceivedListener(
       notification => {
         console.log(notification);
       }
@@ -41,7 +49,8 @@ export default function App() {
 
     // Avoiding memory leaks
     return () => {
-      subscription.remove();
+      backgroundSubscription.remove();
+      foregroundSubscription.remove();
     };
   }, []);
 
