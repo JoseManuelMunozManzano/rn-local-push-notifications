@@ -31,11 +31,14 @@ export default function App() {
       // Sign the app installation up with official push notification servers (Expo servers) in order to receive push notifications.
       // We will get an ID (token) that we will use to push notifications to this app installation on this device.
       // In order to work, you have to be signed-up in Expo
+      // To test it https://expo.io/notifications
       .then(() => {
         return Notifications.getExpoPushTokenAsync();
       })
-      .then(data => {
-        console.log(data);
+      .then(response => {
+        // To see the token to write in https://expo.io/notifications
+        //console.log(response);
+        const token = response.data;
       })
       .catch(err => {
         console.log(err);
