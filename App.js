@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
@@ -14,6 +14,8 @@ Notifications.setNotificationHandler({
 });
 
 export default function App() {
+  const [pushToken, setPushToken] = useState();
+
   useEffect(() => {
     // Only for iOS
     Permissions.getAsync(Permissions.NOTIFICATIONS)
@@ -29,7 +31,7 @@ export default function App() {
         }
       })
       // Sign the app installation up with official push notification servers (Expo servers) in order to receive push notifications.
-      // We will get an ID (token) that we will use to push notifications to this app installation on this device.
+      // We will get an ID (token) that we will use to push notifications to THIS app installation on THIS device.
       // In order to work, you have to be signed-up in Expo
       // To test it https://expo.io/notifications
       .then(() => {
@@ -39,6 +41,7 @@ export default function App() {
         // To see the token to write in https://expo.io/notifications
         //console.log(response);
         const token = response.data;
+        setPushToken(token);
       })
       .catch(err => {
         console.log(err);
@@ -72,21 +75,37 @@ export default function App() {
 
   const triggerNotificationHandler = () => {
     // Local Notification
-    Notifications.scheduleNotificationAsync({
-      content: {
-        title: 'My first local notification',
-        body: 'This is the first local notification we are sending!',
-        // My own metadata in the notification
-        data: {
-          mySpecialData: 'Some Text',
-        },
-      },
-      trigger: {
-        seconds: 10,
-      },
-    });
+    // Notifications.scheduleNotificationAsync({
+    //   content: {
+    //     title: 'My first local notification',
+    //     body: 'This is the first local notification we are sending!',
+    //     // My own metadata in the notification
+    //     data: {
+    //       mySpecialData: 'Some Text',
+    //     },
+    //   },
+    //   trigger: {
+    //     seconds: 10,
+    //   },
+    // });
 
-    // Send a notification totally outside the app
+    // Push notifications from inside the app
+    // We have to send an http request to Expo's push notification servers to deliver our push notification
+    // to a DIFFERENT device
+    fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-Encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        to: pushToken,
+        data: { extraData: 'Some data' },
+        title: 'Sent via the app',
+        body: 'This push notification was sent via the app',
+      }),
+    });
   };
 
   return (
