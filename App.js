@@ -4,6 +4,15 @@ import { Button, StyleSheet, View } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 
+// How the notifications should be handled is the app is running by the operating system
+Notifications.setNotificationHandler({
+  handleNotification: async () => {
+    return {
+      shouldShowAlert: true,
+    };
+  },
+});
+
 export default function App() {
   useEffect(() => {
     // Only for iOS
