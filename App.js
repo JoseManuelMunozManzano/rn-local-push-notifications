@@ -42,6 +42,10 @@ export default function App() {
         //console.log(response);
         const token = response.data;
         setPushToken(token);
+        // Obtain tokens in order to push notifications on ALL devices from YOUR SERVER.
+        // https://docs.expo.io/push-notifications/sending-notifications/
+        // So we would need not only email and password, but push token too.
+        //fetch('https://your-own-api.com')
       })
       .catch(err => {
         console.log(err);
@@ -92,6 +96,7 @@ export default function App() {
     // Push notifications from inside the app
     // We have to send an http request to Expo's push notification servers to deliver our push notification
     // to a DIFFERENT device
+    // This code would be inside the backend part. (https://docs.expo.io/push-notifications/sending-notifications/)
     fetch('https://exp.host/--/api/v2/push/send', {
       method: 'POST',
       headers: {
